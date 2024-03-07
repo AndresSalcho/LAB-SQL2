@@ -1,3 +1,4 @@
+import random
 import threading
 from time import sleep
 from random import randint
@@ -6,6 +7,7 @@ import sql
 
 s = sql.db()
 s.__int__()
+
 
 
 class threadpool:
@@ -25,8 +27,15 @@ class threadpool:
 
     def funcion(self, thread):
         self.sem.acquire()
-        self.personaLista[thread].buySeq()
-        sleep(2)
+        if s.isnull():
+            self.personaLista[thread].sellSeq()
+        else:
+            if randint(0, 1) == 0:
+                self.personaLista[thread].buySeq()
+            elif self.personaLista[thread].sellSeq() == 0:
+                self.personaLista[thread].buySeq()
+
+        sleep(5)
         self.sem.release()
 
     def start(self):
@@ -55,7 +64,7 @@ class threadpool:
         self.personaLista.append(self.c4)
         self.personaLista.append(self.c5)
 
-        while not s.isnull() and not self.cant():
+        while not self.cant():
             threadLista = []
 
             for num_thread in range(self.Threads):
